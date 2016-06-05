@@ -40,6 +40,8 @@ class NewVisitorTest(LiveServerTestCase):
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy peacock feathers"  as an item in a to-do list
         inputbox.send_keys(Keys.ENTER)
+        unique_list_url = self.browser.current_url
+        self.assertRegex(unique_list_url, '/lists/.+')
         self.check_for_rows_in_list_table('1: Buy peacock feathers')
 
         # There is still a text box inviting her to add another item
@@ -53,8 +55,34 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_rows_in_list_table('1: Buy peacock feathers')
         self.check_for_rows_in_list_table('2: Use peacock feather to make a fly')
 
-        # The person wonders whether the site will remember her list. 
-        # She sees that the site has generated a unique URL <-- some text explains this
+        # Now a new user2 comes along to the stite
+
+        ## we use a new browser session to make sure that no information of
+        ## user1 is coming through from cookies etc
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # user2 visits the home page. There is no sign of user1's list.
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers', page_text)
+        self.assertNotIn('make a fly', page_text)
+
+        # user2 starts a new list by entering a new item.
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+
+        # user2 gets his own unique URL
+        unique2_list_url = self.browser.current_url
+        self.assertRegex(unique2_list_url, '/lists/.+')
+        self.assertNotEqual(unique_list_url, unique2_list_url)
+
+        # New page, no trace of user1 list
+        page_text = self.browser.find_element_by_tag_name('body').text        
+        self.assertNotIn('Buy peacock feathers', page_text)
+        self.assertIn('Buy milk', page_text)
+
         self.fail('Finish the test!')
 
         # She visits that URL: her to-do list is still There
