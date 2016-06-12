@@ -6,8 +6,8 @@ from selenium.webdriver.common.keys import Keys
 class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
 
     def tearDown(self):
         self.browser.quit()
@@ -55,12 +55,15 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_rows_in_list_table('1: Buy peacock feathers')
         self.check_for_rows_in_list_table('2: Use peacock feather to make a fly')
 
-        # Now a new user2 comes along to the stite
+
+        # Now a new user2 comes along to the site
 
         ## we use a new browser session to make sure that no information of
         ## user1 is coming through from cookies etc
         self.browser.quit()
-        self.browser = webdriver.Firefox()
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(5)
+
 
         # user2 visits the home page. There is no sign of user1's list.
         self.browser.get(self.live_server_url)

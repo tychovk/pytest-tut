@@ -4,6 +4,7 @@
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from lists.views import home_page
+from lists.views import view_list
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from lists.models import Item
@@ -39,7 +40,7 @@ class HomePageTest(TestCase):
         response = home_page(request)
 
         self.assertEqual(response.status_code, 302) #represents an HTTP redirect
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/lists/the-only-list-ever/')
 
     def test_home_page_displays_all_list_items(self):
         Item.objects.create(text='item 1')
@@ -50,7 +51,6 @@ class HomePageTest(TestCase):
 
         self.assertIn('item 1', response.content.decode())
         self.assertIn('item 2', response.content.decode())
-
 
     def test_home_page_only_saves_items_when_necessary(self):
         request = HttpRequest()
@@ -78,3 +78,16 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, 'The first (ever) list item')
         self.assertEqual(second_saved_item.text, 'Item the second')
+
+
+class ListViewTest(TestCase):
+
+    def test_displays_all_items(self):
+        Item.objects.create(text='item1')
+        Item.objects.create(text='item2')
+
+        request = HttpRequest()
+        response = view_list(request)
+
+        self.assertIn('item1', response.content.decode())
+        self.assertIn('item2', response.content.decode())
