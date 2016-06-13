@@ -19,7 +19,6 @@ class NewVisitorTest(LiveServerTestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
 
-
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Person wants to try out an to-do app, and goes to the homepage:
         self.browser.get(self.live_server_url)
