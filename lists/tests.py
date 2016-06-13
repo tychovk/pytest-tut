@@ -64,8 +64,9 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'lists.html')
 
     def test_displays_all_items(self):
-        Item.objects.create(text='item1')
-        Item.objects.create(text='item2')
+        list_ = List.objects.create()
+        Item.objects.create(text="item1", list=list_)
+        Item.objects.create(text="item2", list=list_)
 
         #request = HttpRequest()
         #response = view_list(request)
