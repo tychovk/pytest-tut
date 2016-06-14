@@ -19,9 +19,32 @@ class NewVisitorTest(LiveServerTestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
 
+    def test_layout_and_styling(self):
+        # Go to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # Seeing the input box is centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
+        # Starts a new list and sees that input is nicely centered there too
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=5
+        )
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Person wants to try out an to-do app, and goes to the homepage:
         self.browser.get(self.live_server_url)
+        self.browser.implicitly_wait(50)
 
         # She notices the page title and header that mention a to-do list
         self.assertIn('To-Do', self.browser.title)
